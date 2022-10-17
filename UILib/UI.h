@@ -1,30 +1,29 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+
 namespace sf
 {
     class RenderWindow;
 }
 
+class UIBaseObject;
+
+
 class UI
 {
 public:
-    UI(){}
+    virtual ~UI(){}
 
-    virtual ~UI(){};
+    virtual void drawElements();
 
-    virtual void drawElements(sf::RenderWindow& __renderWindow) {};
-};
+    virtual void OnClickedUI();
 
+protected:
+    UI(sf::RenderWindow* __ownnerWindow);
 
-class Button;
+    sf::RenderWindow* ownnerWindow = nullptr;
 
-class MainWindowsUI : public UI
-{
-public:
-    MainWindowsUI();
-
-    void drawElements(sf::RenderWindow& __renderWindow) override;
-
-private:
-    Button* okButton = nullptr;
+    std::vector<std::shared_ptr<UIBaseObject>> uiElements;
 };

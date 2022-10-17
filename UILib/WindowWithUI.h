@@ -2,8 +2,6 @@
 
 #include "SFML/Graphics.hpp"
 
-#include <memory>
-
 
 class UI;
 
@@ -20,10 +18,8 @@ protected:
     WindowWithUI(sf::VideoMode __videoMode, sf::String __title);
 
     UI* ui = nullptr;
-};
 
-class MainWindow : public WindowWithUI
-{
-public:
-    MainWindow(sf::VideoMode __videoMode, sf::String __title);
+    sf::Event event;
+
+    virtual void EventHandler(); 
 };

@@ -1,53 +1,134 @@
 #include "UIObjects.h"
-#include <iostream>
+#include "ExitCodes.h"
+#include "Config.h"
 
-void Button::initShape(sf::Vector2i& __center, sf::Vector2f& __size,
-                              sf::Color& __backgroundColor)
-{
-    center = __center; //Need them?
+ UIBaseObject::UIBaseObject(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
+            sf::Color __backgroundColor, sf::RenderWindow* __ownerWindow)
+ {
+    ownerWindow = __ownerWindow;
+
+    leftBottomCorner = __leftBottomCorner; 
     size = __size;
 
-    shape.setPosition(center.x - size.x / 2, center.y - size.y / 2);
+    shape.setPosition(leftBottomCorner.x, leftBottomCorner.y);
     shape.setSize(__size);
 
     shape.setFillColor(__backgroundColor);
-}
+ }
 
-Button::Button(sf::Vector2i __center, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::Texture* __image)
+
+Button::Button(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
+            sf::Color __backgroundColor, sf::Texture* __image, sf::RenderWindow* __ownerWindow)
+: UIBaseObject(__leftBottomCorner, __size, __backgroundColor, __ownerWindow)
 {
-    initShape(__center, __size, __backgroundColor);
-
-    if(texture == nullptr)
+    if(__image == nullptr)
         return;
 
-    shape.setTexture(texture);
+    shape.setTexture(__image);
 }
 
-Button::Button(sf::Vector2i __center, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::Text* __text, 
-            sf::Font& __font, sf::Color __textColor)
+Button::Button(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
+            sf::Color __backgroundColor, sf::Text& __text, 
+            sf::Color __textColor, sf::RenderWindow* __ownerWindow)
+: UIBaseObject(__leftBottomCorner, __size, __backgroundColor, __ownerWindow)
 {
-    initShape(__center, __size, __backgroundColor);
-
     text = __text;
-
-    text->setFont(__font);
-    text->setColor(__textColor);
-}
-
-Button::~Button()
-{
-    delete text;
-    delete texture;
-}
-
-void Button::drawTo(sf::RenderWindow& __renderWindow)
-{
-    __renderWindow.draw(shape);
     
-    if(text == nullptr)
+    text.setColor(__textColor);
+
+    if(!font.loadFromFile("TimesNewRomanRegular.ttf"))
+        EXIT(ExitCodes::CantLoadFont);
+    
+    text.setFont(font);
+    text.setCharacterSize(18);
+    text.setPosition(sf::Vector2f(leftBottomCorner.x  + size.x / 2 - 18, 
+                                    __leftBottomCorner.y + size.y / 2 - 8));
+
+}
+
+
+void Button::draw()
+{
+    ownerWindow->draw(shape);
+
+    ownerWindow->draw(text);
+}
+
+void Button::OnClicked()
+{
+    auto mousePosition = sf::Mouse::getPosition(*ownerWindow);
+
+    auto buttonPosition = leftBottomCorner;
+
+    if(mousePosition.x >= buttonPosition.x + size.x || mousePosition.x <= buttonPosition.x 
+        ||
+        mousePosition.y >= buttonPosition.y + size.y  || mousePosition.y <= buttonPosition.y)
+
         return;
 
-    __renderWindow.draw(*text);
+    MouseClickFunction();
+}
+
+void Button::MouseClickFunction()
+{
+
+}
+
+void TwoPositionButton::MouseClickFunction()
+{
+    Pressed = !Pressed;
+}
+
+Image::Image(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
+            sf::Color __color, sf::Texture* __image, sf::RenderWindow* __ownerWindow)
+: UIBaseObject(__leftBottomCorner, __size, __color, __ownerWindow)
+{
+    if(__image == nullptr)
+        return;
+
+    shape.setTexture(__image);
+}
+
+Image::Image(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
+            sf::Color __color, sf::RenderWindow* __ownerWindow)
+: UIBaseObject(__leftBottomCorner, __size, __color, __ownerWindow)
+{
+}
+
+void Image::draw()
+{
+    ownerWindow->draw(shape);
+}
+
+
+ButtonList::ButtonList(std::initializer_list<sf::String> __buttonsNames, sf::Vector2f __leftBottomCorner, sf::RenderWindow* __ownerWindow) 
+: UIBaseObject(__leftBottomCorner, sf::Vector2f(0, 0), SYSTEM_COLOR, __ownerWindow)
+{
+    shape.setSize(sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT * __buttonsNames.size()));
+    shape.setPosition(__leftBottomCorner);
+
+    for(size_t i = 0; i < __buttonsNames.size(); i++)
+    {
+        sf::Text text;
+        text.setString(*(__buttonsNames.begin() + i));
+
+        auto newButton = new Button(sf::Vector2f(__leftBottomCorner.x, BUTTON_HEIGHT * i + __leftBottomCorner.y), //??
+                                sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), 
+                                SYSTEM_COLOR, text,
+                                sf::Color::Black, __ownerWindow);
+
+        buttons.emplace_back(newButton);
+    }
+
+    for(auto it = buttons.begin(); it < buttons.end(); it++)
+        if((*it).get() == nullptr)
+            EXIT(ExitCodes::CantCreateUIObject);
+}
+
+void ButtonList::draw()
+{
+    ownerWindow->draw(shape);
+
+    for(auto it = buttons.begin(); it < buttons.end(); it++)
+        (*it)->draw();
 }

@@ -2,6 +2,16 @@
 
 enum class ExitCodes : short
 {
-    CantCreateUIObject  = 0,
-    CantCreateUI        = 1
+    NormalProgramTermination    = 0,
+    CantCreateUIObject          = 1,
+    CantCreateUI                = 2,
+    CantLoadTexture             = 3,
+    CantLoadFont                = 4
+};
+
+#include <exception>
+
+class CantCreateClassMember : std::exception
+{
+    
 };

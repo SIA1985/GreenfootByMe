@@ -1,17 +1,20 @@
 #include "UI.h"
 #include "UIObjects.h"
-#include "ExitCodes.h"
 
-MainWindowsUI::MainWindowsUI()
+
+UI::UI(sf::RenderWindow* __ownnerWindow)
 {
-    okButton = new Button(sf::Vector2i(400, 300), sf::Vector2f(150, 150),
-                            sf::Color::Red, nullptr);
-
-    if(okButton == nullptr)
-        EXIT(ExitCodes::CantCreateUIObject);
+    ownnerWindow = __ownnerWindow;
 }
 
-void MainWindowsUI::drawElements(sf::RenderWindow& __renderWindow)
+void UI::drawElements()
 {
-    okButton->drawTo(__renderWindow);
+    for(auto it = uiElements.begin(); it < uiElements.end(); it++)
+        (*it)->draw();  
+}
+
+void UI::OnClickedUI()
+{
+    for(auto it = uiElements.begin(); it < uiElements.end(); it++)
+        (*it)->OnClicked();   
 }

@@ -16,15 +16,28 @@ WindowWithUI::~WindowWithUI()
 
 void WindowWithUI::drawUI()
 {
-     ui->drawElements(*this);
+     ui->drawElements();
 }
 
-
-MainWindow::MainWindow(sf::VideoMode __videoMode, sf::String __title) 
-               : WindowWithUI(__videoMode, __title) 
+void WindowWithUI::work()
 {
-     ui = new MainWindowsUI();
+     while(this->isOpen())
+    {
 
-     if(ui == nullptr)
-          EXIT(ExitCodes::CantCreateUI);
+          while(this->pollEvent(event))
+          {
+               EventHandler();
+          }
+
+          this->clear();
+
+          this->drawUI();
+
+          this->display();
+    }
+}
+
+void WindowWithUI::EventHandler()
+{
+
 }
