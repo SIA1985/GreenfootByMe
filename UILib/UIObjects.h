@@ -20,10 +20,11 @@ public:
     
     virtual ~UIBaseObject() {}
 
-    virtual void draw() {};
-    //virtual void OnChangeResolution(int __width, int __height) = 0;
+    virtual void draw();
 
     virtual void OnClicked(){}
+
+    virtual void OnResolutionChanged(const sf::Vector2f& __sizeCoeficent);
 
 protected:
     sf::RenderWindow* ownerWindow = nullptr;
@@ -49,6 +50,8 @@ public:
     virtual void draw() override;
 
     void OnClicked() override;
+
+    void OnResolutionChanged(const sf::Vector2f& __sizeCoeficent) override;
 
 protected:
     virtual void MouseClickFunction();
@@ -89,8 +92,27 @@ public:
             sf::Color __color, sf::RenderWindow* __ownerWindow);
 
     void draw() override;
+
+    void OnResolutionChanged(const sf::Vector2f& __sizeCoeficent) override;
 };
 
+class ButtonList : public UIBaseObject
+{
+public:
+    ButtonList(std::initializer_list<sf::String> __buttonsNames,
+     std::initializer_list< std::function<void(void)>> __mouseFunctions,
+     sf::Vector2f __leftBottomCorner,
+     sf::RenderWindow* __ownerWindow);
+
+    void draw() override;
+
+    void OnClicked() override; 
+    
+    void OnResolutionChanged(const sf::Vector2f& __sizeCoeficent) override;
+
+private:
+    std::vector<std::shared_ptr<Button>> buttons;
+};
 
 class Textbox : public UIBaseObject
 {
@@ -118,20 +140,4 @@ public:
 private:
     sf::Vector2i coursorPosition;
     sf::String text;
-};
-
-class ButtonList : public UIBaseObject
-{
-public:
-    ButtonList(std::initializer_list<sf::String> __buttonsNames,
-     std::initializer_list< std::function<void(void)>> __mouseFunctions,
-     sf::Vector2f __leftBottomCorner,
-     sf::RenderWindow* __ownerWindow);
-
-    void draw() override;
-
-    void OnClicked() override; 
-
-private:
-    std::vector<std::shared_ptr<Button>> buttons;
 };

@@ -92,7 +92,7 @@ void HelpButton::MouseClickFunction()
 
 bool HelpButton::CreateHelpWindow()
 {
-    helpWindow = std::make_shared<HelpWindow>(sf::VideoMode(400, 300), "Help");
+    helpWindow = std::make_shared<HelpWindow>(sf::VideoMode(400, 300), 30, "Help");
 
     if(helpWindow.get() == nullptr)
         return false;

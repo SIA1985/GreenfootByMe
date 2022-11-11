@@ -7,7 +7,7 @@
  UIBaseObject::UIBaseObject(sf::RenderWindow* __ownerWindow)
  {
     if(__ownerWindow == nullptr)
-        EXIT(ExitCodes::NoOwner);
+        EXITWITHCODE(ExitCodes::NoObjectOwner);
 
     ownerWindow = __ownerWindow;
  }
@@ -16,7 +16,7 @@
             sf::Color __backgroundColor, sf::RenderWindow* __ownerWindow)
  {
     if(__ownerWindow == nullptr)
-        EXIT(ExitCodes::NoOwner);
+        EXITWITHCODE(ExitCodes::NoObjectOwner);
 
     ownerWindow = __ownerWindow;
 
@@ -29,17 +29,29 @@
     shape.setFillColor(__backgroundColor);
  }
 
+void UIBaseObject::OnResolutionChanged(const sf::Vector2f& __sizeCoeficent)
+{
+    sf::Vector2f newSize(size.x * __sizeCoeficent.x, 
+                         size.y * __sizeCoeficent.y);
+
+    shape.setSize(newSize);
+}
+
+void UIBaseObject::draw()
+{
+    ownerWindow->draw(shape);
+}
 
 Button::Button(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
             sf::Color __backgroundColor, sf::Texture* __image, const std::function<void(void)> __mouseFunction, sf::RenderWindow* __ownerWindow)
 : UIBaseObject(__leftBottomCorner, __size, __backgroundColor, __ownerWindow)
 {
+    mouseFunction = __mouseFunction;
+
     if(__image == nullptr)
         return;
 
     shape.setTexture(__image);
-
-    mouseFunction = __mouseFunction;
 }
 
 Button::Button(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
@@ -48,7 +60,7 @@ Button::Button(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
 : UIBaseObject(__leftBottomCorner, __size, __backgroundColor, __ownerWindow)
 {
     if(!font.loadFromFile("res/TimesNewRomanRegular.ttf"))
-        EXIT(ExitCodes::CantLoadFont);
+        EXITWITHCODE(ExitCodes::CantLoadFont);
 
     text.setString(__name);
     
@@ -86,6 +98,13 @@ void Button::OnClicked()
     MouseClickFunction();
 }
 
+void Button::OnResolutionChanged(const sf::Vector2f& __sizeCoeficent)
+{
+    UIBaseObject::OnResolutionChanged(__sizeCoeficent);
+
+    text.setScale(__sizeCoeficent);
+}
+
 void Button::MouseClickFunction()
 {
     mouseFunction();
@@ -117,13 +136,19 @@ void Image::draw()
     ownerWindow->draw(shape);
 }
 
+void Image::OnResolutionChanged(const sf::Vector2f& __sizeCoeficent)
+{
+    UIBaseObject::OnResolutionChanged(__sizeCoeficent);
+    shape.setScale(__sizeCoeficent);
+    //std::cout << shape.getSize().x << '\n'; ///????????????????
+}
 
 ButtonList::ButtonList(std::initializer_list<sf::String> __buttonsNames,  std::initializer_list< std::function<void(void)>> __mouseFunctions,
                      sf::Vector2f __leftBottomCorner, sf::RenderWindow* __ownerWindow) 
 : UIBaseObject(__leftBottomCorner, sf::Vector2f(0, 0), SYSTEM_COLOR, __ownerWindow)
 {
     if(__buttonsNames.size() != __mouseFunctions.size())
-        EXIT(ExitCodes::CantCreateUIObject);
+        EXITWITHCODE(ExitCodes::CantCreateUIObject);
 
     shape.setSize(sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT * __buttonsNames.size()));
     shape.setPosition(__leftBottomCorner);
@@ -143,7 +168,7 @@ ButtonList::ButtonList(std::initializer_list<sf::String> __buttonsNames,  std::i
 
     for(auto it = buttons.begin(); it < buttons.end(); it++)
         if((*it).get() == nullptr)
-            EXIT(ExitCodes::CantCreateUIObject);
+            EXITWITHCODE(ExitCodes::CantCreateUIObject);
 }
 
 void ButtonList::draw()
@@ -173,11 +198,19 @@ void ButtonList::OnClicked()
         (*it)->OnClicked();
 }
 
+void ButtonList::OnResolutionChanged(const sf::Vector2f& __sizeCoeficent)
+{
+    UIBaseObject::OnResolutionChanged(__sizeCoeficent);
+
+    for(auto it = buttons.begin(); it < buttons.end(); it++)
+        (*it)->OnResolutionChanged(__sizeCoeficent);
+}
+
 Textbox::Textbox(sf::String __textString, sf::Color __textColor ,sf::RenderWindow* __ownerWindow)
 : UIBaseObject(__ownerWindow) 
 {
     if(!font.loadFromFile("res/TimesNewRomanRegular.ttf"))
-        EXIT(ExitCodes::CantLoadFont);
+        EXITWITHCODE(ExitCodes::CantLoadFont);
 
     text.setString(__textString);
 

@@ -20,9 +20,15 @@ void UI::OnClickedUI()
         (*it)->OnClicked();   
 }
 
-void UI::CheckElementsForNull()
+void UI::OnResolutionChanged(const sf::Vector2f& __sizeCoeficent)
+{
+    for(auto it = uiElements.begin(); it < uiElements.end(); it++)
+        (*it)->OnResolutionChanged(__sizeCoeficent);
+}
+
+void UI::checkElementsForNull()
 {
         for(auto it = uiElements.begin(); it < uiElements.end(); it++)
             if(it->get() == nullptr)
-                EXIT(ExitCodes::CantCreateUIObject);
+                EXITWITHCODE(ExitCodes::CantCreateUIObject);
 }

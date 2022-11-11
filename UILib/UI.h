@@ -3,6 +3,8 @@
 #include <vector>
 #include <memory>
 
+#include "SFML/System.hpp"
+
 namespace sf
 {
     class RenderWindow;
@@ -20,6 +22,8 @@ public:
 
     virtual void OnClickedUI();
 
+    virtual void OnResolutionChanged(const sf::Vector2f& __sizeCoeficent);
+
 protected:
     UI(sf::RenderWindow* __ownnerWindow);
 
@@ -27,5 +31,5 @@ protected:
 
     std::vector<std::shared_ptr<UIBaseObject>> uiElements;
 
-    void CheckElementsForNull();
+    void checkElementsForNull();
 };
