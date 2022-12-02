@@ -13,9 +13,9 @@ void TwoPositionButtonv2::OnClicked()
 
     const auto buttonPosition = leftBottomCorner;
 
-    if(mousePosition.x >= buttonPosition.x + size.x || mousePosition.x <= buttonPosition.x 
+    if(mousePosition.x >= buttonPosition.x + shapeInitSize.x || mousePosition.x <= buttonPosition.x 
         ||
-        mousePosition.y >= buttonPosition.y + size.y  || mousePosition.y <= buttonPosition.y || Clicked)
+        mousePosition.y >= buttonPosition.y + shapeInitSize.y  || mousePosition.y <= buttonPosition.y || Clicked)
     {
         MouseClickFunction();
         Clicked = false;
@@ -30,9 +30,8 @@ void TwoPositionButtonv2::MouseClickFunction()
 }
 
 FileButton::FileButton(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::String __name, 
-            sf::Color __textColor, sf::RenderWindow* __ownerWindow)
-: TwoPositionButtonv2(__leftBottomCorner, __size, __backgroundColor, __name, __textColor, __ownerWindow)
+            sf::String __name, sf::RenderWindow* __ownerWindow)
+: TwoPositionButtonv2(__leftBottomCorner, __size, __name, __ownerWindow)
 {
     buttonListPtr = std::make_shared<ButtonList>(ButtonList({"Open", "Save", "Quit"}, {[](){std::cout << "Open\n";}, [](){std::cout << "Save\n";}, [](){EXIT(ExitCodes::NormalProgramTermination);},},
                          sf::Vector2f(__leftBottomCorner.x, __leftBottomCorner.y + BUTTON_HEIGHT), __ownerWindow));
@@ -55,9 +54,8 @@ void FileButton::MouseClickFunction()
 }
 
 EditButton::EditButton(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::String __name, 
-            sf::Color __textColor, sf::RenderWindow* __ownerWindow)
-: TwoPositionButtonv2(__leftBottomCorner, __size, __backgroundColor, __name, __textColor, __ownerWindow)
+            sf::String __name, sf::RenderWindow* __ownerWindow)
+: TwoPositionButtonv2(__leftBottomCorner, __size, __name, __ownerWindow)
 {
     buttonListPtr = std::make_shared<ButtonList>(ButtonList({"Stop", "Start"}, { [](){std::cout << "Stop\n";}, [](){std::cout << "Start\n";} }, sf::Vector2f(__leftBottomCorner.x, __leftBottomCorner.y + BUTTON_HEIGHT), __ownerWindow));
 }

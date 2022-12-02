@@ -12,10 +12,9 @@ class TwoPositionButtonv2 : public TwoPositionButton
 {
 public:
     TwoPositionButtonv2(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::String __name, 
-            sf::Color __textColor, sf::RenderWindow* __ownerWindow)
-    : TwoPositionButton(__leftBottomCorner, __size, __backgroundColor, __name,
-                        __textColor, __ownerWindow) {}
+                        sf::String __name, sf::RenderWindow* __ownerWindow)
+    : TwoPositionButton(__leftBottomCorner, __size, __name,
+                        __ownerWindow) {}
 
     void OnClicked() override;
 
@@ -28,8 +27,7 @@ class FileButton : public TwoPositionButtonv2
 {
 public:
     FileButton(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::String __name, 
-            sf::Color __textColor, sf::RenderWindow* __ownerWindow);
+            sf::String __name, sf::RenderWindow* __ownerWindow);
 
     void draw() override;
 
@@ -44,8 +42,7 @@ class EditButton : public TwoPositionButtonv2
 {
 public:
     EditButton(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::String __name, 
-            sf::Color __textColor, sf::RenderWindow* __ownerWindow);
+            sf::String __name, sf::RenderWindow* __ownerWindow);
 
     void draw() override;
 
@@ -61,10 +58,9 @@ class HelpButton : public Button
 {
 public:
     HelpButton(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::String __name, 
-            sf::Color __textColor, sf::RenderWindow* __ownerWindow)
-: Button(__leftBottomCorner, __size, __backgroundColor, __name,
-                        __textColor, [](){}, __ownerWindow) {}
+            sf::String __name, sf::RenderWindow* __ownerWindow)
+: Button(__leftBottomCorner, __size, __name,
+         [](){}, __ownerWindow) {}
         
 protected:
     void MouseClickFunction() override; 

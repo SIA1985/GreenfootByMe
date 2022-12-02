@@ -24,22 +24,19 @@ Menubar::Menubar(sf::RenderWindow* __ownerWindow)
 
     FileButton* fileButton = new FileButton(sf::Vector2f(0, 0), 
                                             sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), 
-                                            SYSTEM_COLOR, "File",
-                                            sf::Color::Black, __ownerWindow);
+                                            "File", __ownerWindow);
 
     uiElements.emplace_back(fileButton);
 
     EditButton* editButton = new EditButton(sf::Vector2f(BUTTON_WIDTH, 0), 
                                             sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), 
-                                            SYSTEM_COLOR, "Edit",
-                                            sf::Color::Black, __ownerWindow);
+                                            "Edit", __ownerWindow);
 
     uiElements.emplace_back(editButton);
 
     HelpButton* helpButton = new HelpButton(sf::Vector2f(BUTTON_WIDTH * 2, 0), 
                                             sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), 
-                                            SYSTEM_COLOR, "Help",
-                                            sf::Color::Black, __ownerWindow);
+                                            "Help", __ownerWindow);
 
     uiElements.emplace_back(helpButton);
 
@@ -64,8 +61,7 @@ SceneAndControlPanel::SceneAndControlPanel(sf::RenderWindow* __ownnerWindow)
         EXITWITHCODE(ExitCodes::CantLoadTexture);
 
     auto startButton = new Button(sf::Vector2f(ownerWindowSize.x * 0.7 / 4 - BUTTON_WIDTH / 2, ownerWindowSize.y - BUTTON_HEIGHT * 2), 
-                                    sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT),
-                                    SYSTEM_COLOR, startButtonIcon, [](){std::cout << "Start\n";}, ownnerWindow);
+                                    sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), startButtonIcon, [](){std::cout << "Start\n";}, ownnerWindow);
 
     uiElements.emplace_back(startButton);
 
@@ -74,8 +70,7 @@ SceneAndControlPanel::SceneAndControlPanel(sf::RenderWindow* __ownnerWindow)
         EXITWITHCODE(ExitCodes::CantLoadTexture);
 
     auto pauseButton = new Button(sf::Vector2f(ownerWindowSize.x * 0.7 * 2 / 4 - BUTTON_WIDTH / 2, ownerWindowSize.y - BUTTON_HEIGHT * 2), 
-                                    sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT),
-                                    SYSTEM_COLOR, pauseButtonIcon, [](){std::cout << "Pause\n";}, ownnerWindow);
+                                    sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), pauseButtonIcon, [](){std::cout << "Pause\n";}, ownnerWindow);
 
     uiElements.emplace_back(pauseButton);
 
@@ -84,8 +79,7 @@ SceneAndControlPanel::SceneAndControlPanel(sf::RenderWindow* __ownnerWindow)
         EXITWITHCODE(ExitCodes::CantLoadTexture);
 
     auto stopButton = new Button(sf::Vector2f(ownerWindowSize.x * 0.7 * 3 / 4 - BUTTON_WIDTH / 2, ownerWindowSize.y - BUTTON_HEIGHT * 2), 
-                                    sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT),
-                                    SYSTEM_COLOR, stopButtonIcon, [](){std::cout << "Stop\n";}, ownnerWindow);
+                                    sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), stopButtonIcon, [](){std::cout << "Stop\n";}, ownnerWindow);
 
     uiElements.emplace_back(stopButton);
 
@@ -110,6 +104,10 @@ MainWindowsUI::MainWindowsUI(sf::RenderWindow* __ownnerWindow)
     auto menu = new Menubar(__ownnerWindow);
 
     elements.emplace_back(menu);
+
+    auto tree = new ClassTree(__ownnerWindow);
+
+    elements.emplace_back(tree);
 
     checkElementsForNull();
     
@@ -165,7 +163,7 @@ HelpWindowsUI::HelpWindowsUI(sf::RenderWindow* __ownnerWindow)
             }
     }
 
-    auto text = new Textbox(inputString, sf::Color::Black,  ownnerWindow);
+    auto text = new Textbox(inputString, ownnerWindow);
 
     uiElements.emplace_back(text);
 
@@ -176,4 +174,26 @@ HelpWindowsUI::HelpWindowsUI(sf::RenderWindow* __ownnerWindow)
 void HelpWindowsUI::OnClickedUI()
 {
 
+}
+
+ClassTree::ClassTree(sf::RenderWindow* __ownnerWindow)
+: UI(__ownnerWindow)
+{
+    auto ownerWindowSize = ownnerWindow->getSize();
+
+    auto background = new Image(sf::Vector2f(0.715 * ownerWindowSize.x, 0.1 * (ownerWindowSize.y - BUTTON_HEIGHT)), 
+                                sf::Vector2f(0.3 * ownerWindowSize.x * 0.9, (ownerWindowSize.y - BUTTON_HEIGHT) * 0.9),
+                                SYSTEM_COLOR, __ownnerWindow);
+
+    uiElements.emplace_back(background);
+
+ //   auto worldClass = new Button();
+
+    checkElementsForNull();
+}
+
+void ClassTree::OnClickedUI()
+{
+    ///if(event == RightMouseButton) -> add element
+    ///else -> uiElements->OnClicked();
 }

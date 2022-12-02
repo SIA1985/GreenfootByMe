@@ -56,14 +56,19 @@ void WindowWithUI::onResize()
      if(windowSize.x < WINDOW_MIN_WIDTH)
           newSize.x = WINDOW_MIN_WIDTH;
 
-     if(windowSize.x > WINDOW_MAX_WIDTH)
-          newSize.x = WINDOW_MAX_WIDTH;
+     if(windowSize.x > WINDOW_MIN_WIDTH)
+          newSize.x = WINDOW_MIN_WIDTH;
+     // if(windowSize.x > WINDOW_MAX_WIDTH)
+     //      newSize.x = WINDOW_MAX_WIDTH;
 
      if(windowSize.y < WINDOW_MIN_HEIGHT)
           newSize.y = WINDOW_MIN_HEIGHT;
 
-     if(windowSize.y > WINDOW_MAX_HEIGHT)
-          newSize.y = WINDOW_MAX_HEIGHT;
+     // if(windowSize.y > WINDOW_MAX_HEIGHT)
+     //      newSize.y = WINDOW_MAX_HEIGHT;
+
+     if(windowSize.y > WINDOW_MIN_HEIGHT)
+          newSize.y = WINDOW_MIN_HEIGHT;
 
      if(newSize != windowSize)
           this->setSize(newSize);

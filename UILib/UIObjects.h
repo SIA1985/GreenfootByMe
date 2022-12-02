@@ -16,7 +16,7 @@ public:
     UIBaseObject(sf::RenderWindow* __ownerWindow); //change nullptr
 
     UIBaseObject(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor = SYSTEM_COLOR, sf::RenderWindow* __ownerWindow = nullptr);
+                sf::RenderWindow* __ownerWindow = nullptr);
     
     virtual ~UIBaseObject() {}
 
@@ -31,7 +31,9 @@ protected:
     
     sf::RectangleShape shape; 
     sf::Vector2f leftBottomCorner;
-    sf::Vector2f size;
+
+    sf::Vector2f shapeInitSize;
+    sf::Vector2f shapeInitPosition;
 };
 
 
@@ -39,12 +41,12 @@ class Button : public UIBaseObject
 {
 public:
     Button(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::Texture* __image, 
+            sf::Texture* __image, 
             const std::function<void(void)> __mouseFunction, sf::RenderWindow* __ownerWindow);
 
     Button(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::String __name, 
-            sf::Color __textColor, const std::function<void(void)> __mouseFunction, 
+            sf::String __name, 
+            const std::function<void(void)> __mouseFunction, 
             sf::RenderWindow* __ownerWindow);
 
     virtual void draw() override;
@@ -61,19 +63,21 @@ private:
     sf::Font font;
 
     std::function<void(void)> mouseFunction;
+
+    sf::Vector2f textInitPosition;
 };
 
 class TwoPositionButton : public Button
 {
 public:
     TwoPositionButton(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::Texture* __image, sf::RenderWindow* __ownerWindow) 
-            : Button(__leftBottomCorner, __size, __backgroundColor, __image, [](){}, __ownerWindow) {}
+            sf::Texture* __image, sf::RenderWindow* __ownerWindow) 
+            : Button(__leftBottomCorner, __size, __image, [](){}, __ownerWindow) {}
 
     TwoPositionButton(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::String __name, 
-            sf::Color __textColor, sf::RenderWindow* __ownerWindow) 
-            : Button(__leftBottomCorner, __size, __backgroundColor, __name, __textColor, [](){}, __ownerWindow) {}
+            sf::String __name, 
+            sf::RenderWindow* __ownerWindow) 
+            : Button(__leftBottomCorner, __size, __name, [](){}, __ownerWindow) {}
 
 protected:
     void MouseClickFunction() override;
@@ -114,10 +118,10 @@ private:
     std::vector<std::shared_ptr<Button>> buttons;
 };
 
-class Textbox : public UIBaseObject
+class Textbox : public UIBaseObject //нужен?
 {
 public:
-    Textbox(sf::String __textString, sf::Color __textColor, sf::RenderWindow* __ownerWindow);
+    Textbox(sf::String __textString, sf::RenderWindow* __ownerWindow);
 
     void draw() override;
 
@@ -129,7 +133,8 @@ private:
 class Textbar : public UIBaseObject
 {
 public:
-    Textbar();
+    Textbar(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
+            sf::RenderWindow* __ownerWindow);
 
     void draw() override;
 
@@ -138,6 +143,13 @@ public:
     void OnKeyboardClick();
 
 private:
-    sf::Vector2i coursorPosition;
+    //Textbox ?
+    bool Clicked = false;
+    sf::Text activitySign; 
+    
+    sf::Vector2f textLeftBottomCorner;
+    sf::Vector2i coursorPosition; //long long
+    sf::Font font;
     sf::String text;
+    int lineCount = 1; //!!!!!!!!!!!!!!
 };

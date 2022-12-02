@@ -13,7 +13,7 @@
  }
 
  UIBaseObject::UIBaseObject(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::RenderWindow* __ownerWindow)
+                             sf::RenderWindow* __ownerWindow)
  {
     if(__ownerWindow == nullptr)
         EXITWITHCODE(ExitCodes::NoObjectOwner);
@@ -21,20 +21,24 @@
     ownerWindow = __ownerWindow;
 
     leftBottomCorner = __leftBottomCorner; 
-    size = __size;
+    shapeInitSize = __size;
 
     shape.setPosition(leftBottomCorner.x, leftBottomCorner.y);
     shape.setSize(__size);
 
-    shape.setFillColor(__backgroundColor);
+    shape.setFillColor(SYSTEM_COLOR);
  }
 
 void UIBaseObject::OnResolutionChanged(const sf::Vector2f& __sizeCoeficent)
 {
-    sf::Vector2f newSize(size.x * __sizeCoeficent.x, 
-                         size.y * __sizeCoeficent.y);
+    sf::Vector2f newSize(shapeInitSize.x * __sizeCoeficent.x, 
+                         shapeInitSize.y * __sizeCoeficent.y);
+
+    sf::Vector2f newPosition(shapeInitPosition.x / __sizeCoeficent.x, 
+                            shapeInitPosition.y / __sizeCoeficent.y);
 
     shape.setSize(newSize);
+    shape.setPosition(newPosition);
 }
 
 void UIBaseObject::draw()
@@ -43,8 +47,8 @@ void UIBaseObject::draw()
 }
 
 Button::Button(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::Texture* __image, const std::function<void(void)> __mouseFunction, sf::RenderWindow* __ownerWindow)
-: UIBaseObject(__leftBottomCorner, __size, __backgroundColor, __ownerWindow)
+               sf::Texture* __image, const std::function<void(void)> __mouseFunction, sf::RenderWindow* __ownerWindow)
+: UIBaseObject(__leftBottomCorner, __size, __ownerWindow)
 {
     mouseFunction = __mouseFunction;
 
@@ -55,21 +59,21 @@ Button::Button(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
 }
 
 Button::Button(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
-            sf::Color __backgroundColor, sf::String __name, 
-            sf::Color __textColor, const std::function<void(void)> __mouseFunction, sf::RenderWindow* __ownerWindow)
-: UIBaseObject(__leftBottomCorner, __size, __backgroundColor, __ownerWindow)
+                sf::String __name, 
+            const std::function<void(void)> __mouseFunction, sf::RenderWindow* __ownerWindow)
+: UIBaseObject(__leftBottomCorner, __size, __ownerWindow)
 {
     if(!font.loadFromFile("res/TimesNewRomanRegular.ttf"))
         EXITWITHCODE(ExitCodes::CantLoadFont);
 
     text.setString(__name);
     
-    text.setColor(__textColor);
+    text.setColor(FONT_COLOR);
     
     text.setFont(font);
-    text.setCharacterSize(18);
-    text.setPosition(sf::Vector2f(leftBottomCorner.x  + size.x / 2 - 18, 
-                                    __leftBottomCorner.y + size.y / 2 - 8));
+    text.setCharacterSize(FONT_SIZE);
+    text.setPosition(sf::Vector2f(leftBottomCorner.x  + shapeInitSize.x / 2 - 18, 
+                                    __leftBottomCorner.y + shapeInitSize.y / 2 - 8));
                         
     mouseFunction = __mouseFunction;
 
@@ -89,9 +93,9 @@ void Button::OnClicked()
 
     auto buttonPosition = leftBottomCorner;
 
-    if(mousePosition.x >= buttonPosition.x + size.x || mousePosition.x <= buttonPosition.x 
+    if(mousePosition.x >= buttonPosition.x + shapeInitSize.x || mousePosition.x <= buttonPosition.x 
         ||
-        mousePosition.y >= buttonPosition.y + size.y  || mousePosition.y <= buttonPosition.y)
+        mousePosition.y >= buttonPosition.y + shapeInitSize.y  || mousePosition.y <= buttonPosition.y)
 
         return;
 
@@ -100,9 +104,14 @@ void Button::OnClicked()
 
 void Button::OnResolutionChanged(const sf::Vector2f& __sizeCoeficent)
 {
-    UIBaseObject::OnResolutionChanged(__sizeCoeficent);
+    // // UIBaseObject::OnResolutionChanged(__sizeCoeficent);
+    // sf::Vector2f newShapePosition(shape.getPosition().x * __sizeCoeficent.x,
+    //                                     shape.getPosition().y * __sizeCoeficent.y);
+    // sf::Vector2f newTextPosition(text.getPosition().x * __sizeCoeficent.x,
+    //                                 text.getPosition().y * __sizeCoeficent.y);
 
-    text.setScale(__sizeCoeficent);
+    // shape.setPosition(newShapePosition);
+    // text.setPosition(newTextPosition);
 }
 
 void Button::MouseClickFunction()
@@ -117,18 +126,21 @@ void TwoPositionButton::MouseClickFunction()
 
 Image::Image(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
             sf::Color __color, sf::Texture* __image, sf::RenderWindow* __ownerWindow)
-: UIBaseObject(__leftBottomCorner, __size, __color, __ownerWindow)
+: UIBaseObject(__leftBottomCorner, __size, __ownerWindow)
 {
     if(__image == nullptr)
         return;
+
+    shape.setFillColor(__color); //??
 
     shape.setTexture(__image);
 }
 
 Image::Image(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
             sf::Color __color, sf::RenderWindow* __ownerWindow)
-: UIBaseObject(__leftBottomCorner, __size, __color, __ownerWindow)
+: UIBaseObject(__leftBottomCorner, __size, __ownerWindow)
 {
+    shape.setFillColor(__color);
 }
 
 void Image::draw()
@@ -138,14 +150,12 @@ void Image::draw()
 
 void Image::OnResolutionChanged(const sf::Vector2f& __sizeCoeficent)
 {
-    UIBaseObject::OnResolutionChanged(__sizeCoeficent);
-    shape.setScale(__sizeCoeficent);
-    //std::cout << shape.getSize().x << '\n'; ///????????????????
+
 }
 
 ButtonList::ButtonList(std::initializer_list<sf::String> __buttonsNames,  std::initializer_list< std::function<void(void)>> __mouseFunctions,
                      sf::Vector2f __leftBottomCorner, sf::RenderWindow* __ownerWindow) 
-: UIBaseObject(__leftBottomCorner, sf::Vector2f(0, 0), SYSTEM_COLOR, __ownerWindow)
+: UIBaseObject(__leftBottomCorner, sf::Vector2f(0, 0), __ownerWindow)
 {
     if(__buttonsNames.size() != __mouseFunctions.size())
         EXITWITHCODE(ExitCodes::CantCreateUIObject);
@@ -160,8 +170,7 @@ ButtonList::ButtonList(std::initializer_list<sf::String> __buttonsNames,  std::i
 
         auto newButton = new Button(sf::Vector2f(__leftBottomCorner.x, BUTTON_HEIGHT * i + __leftBottomCorner.y), //??
                                 sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), 
-                                SYSTEM_COLOR, name,
-                                sf::Color::Black, function, __ownerWindow);
+                                name, function, __ownerWindow);
 
         buttons.emplace_back(newButton);
     }
@@ -206,7 +215,7 @@ void ButtonList::OnResolutionChanged(const sf::Vector2f& __sizeCoeficent)
         (*it)->OnResolutionChanged(__sizeCoeficent);
 }
 
-Textbox::Textbox(sf::String __textString, sf::Color __textColor ,sf::RenderWindow* __ownerWindow)
+Textbox::Textbox(sf::String __textString ,sf::RenderWindow* __ownerWindow)
 : UIBaseObject(__ownerWindow) 
 {
     if(!font.loadFromFile("res/TimesNewRomanRegular.ttf"))
@@ -214,12 +223,65 @@ Textbox::Textbox(sf::String __textString, sf::Color __textColor ,sf::RenderWindo
 
     text.setString(__textString);
 
-    text.setFont(font);
+    text.setFont(font); 
 
-    text.setColor(__textColor);
+    text.setCharacterSize(FONT_SIZE);
+
+    text.setColor(FONT_COLOR);
 }
 
 void Textbox::draw()
 {
     ownerWindow->draw(text);
+}
+
+Textbar::Textbar(sf::Vector2f __leftBottomCorner, sf::Vector2f __size,
+                 sf::RenderWindow* __ownerWindow)
+: UIBaseObject(__leftBottomCorner, __size, __ownerWindow)
+{
+    if(!font.loadFromFile("res/TimesNewRomanRegular.ttf"))
+        EXITWITHCODE(ExitCodes::CantLoadFont);
+
+    activitySign.setString(">");
+
+    activitySign.setFont(font);
+
+    activitySign.setColor(FONT_COLOR);
+
+    activitySign.setCharacterSize(FONT_SIZE);
+
+    textLeftBottomCorner = sf::Vector2f(__leftBottomCorner.x + TEXTBAR_MIN_HEIGHT / 2.f, __leftBottomCorner.y + FONT_OFFSET);
+
+    activitySign.setPosition(sf::Vector2f());
+
+
+    shape.setPosition(__leftBottomCorner);
+
+    shape.setSize(__size);
+
+    shape.setFillColor(SYSTEM_COLOR);
+
+}
+
+void Textbar::draw()
+{
+    ownerWindow->draw(shape);
+
+    if(Clicked)
+        ownerWindow->draw(activitySign);
+}
+
+void Textbar::OnClicked()
+{
+    auto mousePosition = sf::Mouse::getPosition(*ownerWindow);
+
+    auto buttonPosition = leftBottomCorner;
+
+    if(mousePosition.x >= buttonPosition.x + shapeInitSize.x || mousePosition.x <= buttonPosition.x 
+        ||
+        mousePosition.y >= buttonPosition.y + shapeInitSize.y  || mousePosition.y <= buttonPosition.y)
+
+        Clicked = false;
+    else
+        Clicked = true;
 }
